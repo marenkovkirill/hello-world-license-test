@@ -2,9 +2,9 @@
 
 # About RCML
 
-*RCML* is an intellectual management system and high level programming language developed for industrial robotics.
+*RCML* is an intellectual management system and high level programming language for industrial robotics.
 
-*RCML* commercial software  for industiral robotics allows to create adaptive cells and production lines and reduces the cost of their programming and changeover up to 10 times.
+*RCML* commercial software allows to create adaptive cells and production lines with industrial robots and reduces the cost of their programming and changeover up to 10 times.
 
 *RCML* is an official partner of largest manufacturers of industrial robots in the world: [ABB (Switzerland)](http://new.abb.com/products/robotics), [FANUC (Japan)](http://www.fanuc.com/), [KUKA (Germany)](https://www.kuka.com/).
 
@@ -64,11 +64,19 @@
  
 	[*ROS*](http://www.ros.org/) library module allows to send messages of standard types supported by *ROS* to chosen topics.
 	
+ - ["Modbus"]()
+ 
+	In development.
+
+ - ["MQTT"]() 
+ 
+	Planned to be developed.
+	
 # List of Improvements
 
+We are going to grow the list of libraties and interfaces for communication with industrial robots supported by *RCML*.
 
-
-Waiting for further updates.
+Any feedback/contribution is appreciated!
 
 # Documentation
 
@@ -82,6 +90,6 @@ Waiting for further updates.
 
 # License
 
-Leanr more about the 
+[Microsoft Public License](https://github.com/rcml-tech/community_RULES/tree/master)
 
 
