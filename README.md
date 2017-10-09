@@ -1,4 +1,4 @@
-# community_RULES
+# RCML Community Rules
 
 # 1 About RCML software and programming language
 
