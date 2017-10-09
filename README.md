@@ -82,6 +82,8 @@ Please read the following Readme and [Contribution.md]() before you start.
 
 We are going to grow the list of libraties and interfaces for communication with industrial robots supported by *RCML*.
 
+Cheak actual tasks on [community Trello board](http://trello.com).
+
 Any feedback/contribution is appreciated!
 
 # Documentation
