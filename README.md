@@ -8,11 +8,11 @@
 
 *RCML* is an official partner of largest manufacturers of industrial robots in the world: [ABB (Switzerland)](http://new.abb.com/products/robotics), [FANUC (Japan)](http://www.fanuc.com/), [KUKA (Germany)](https://www.kuka.com/).
 
-*RCML* open source projects are the modules of the *RCML* language that might be used by service robots control or in communication between robots.
+*RCML* open source projects are the modules of the *RCML* language that might be used by service robots or in communication between robots.
 
 We want you to join us in development of the ways of robotic communication. 
 
-Please read the following Readme and [Contribution.md]() befor you start.
+Please read the following Readme and [Contribution.md]() before you start.
 
 # Repositories available for editing
 
