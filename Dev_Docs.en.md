@@ -29,7 +29,7 @@ These functions are called only once at the launch of the compiler or interprete
 
 **Attention!** Also remember that when the compiler is running, the methods of the modules are called from the same thread, because the compiler is single-threaded When the interpreter methods are used, they can be called from different sources at arbitrary times, rather than strictly sequentially.
 
-**Therefore, all modules that work with the equipment must be thread-safe.**
+**All modules that work with the equipment must be thread-safe.**
 
 It is highly recomended to use a *singletone* design pattern in the process of robot module developement, consider that the calls of the robot module methods can happen from different threads and even simultaneously.
 
@@ -46,13 +46,15 @@ RobotModule* getRobotModuleObject();
 ```
 *getRobotModuleApiVersion* function returns the version of *API* of robot module in a given module as a positive integer. The best way to determine this function is to use the following code:
 ```
-unsigned short getRobotModuleApiVersion() { return ROBOT_MODULE_API_VERSION; }
+unsigned short getRobotModuleApiVersion() { return MODULE_API_VERSION; }
 ```
-*ROBOT_MODULE_API_VERSION* constant is defined in *robot_module.h* linked file, which is required when compiling robot module. Thus, we can omit specifying a version manually, and it will match the module interface used.
+*MODULE_API_VERSION* constant is defined in *robot_module.h* linked file, which is required when compiling robot module. Thus, we can omit specifying a version manually, and it will match the module interface used.
 
 *getRobotModuleObject* function returns a pointer to the object of the abstract class RobotModule, essentially describing the required robot module interface.
 
 Hereinafter we will refer *RobotModule* class as the abstract robot module. Correspondingly, the class pointed by the returned pointer, must be inherited from it (the abstract robot module) and must re-define all virtual methods of this class, maintaining mode of application to them. This subsidiary class will be referred to as robot module.
+
+### 1.1.2 Robot module API
 
 RobotModule class description in *C++*:
 ```
@@ -63,7 +65,8 @@ class RobotModule {
  public:
   // init
   virtual const struct ModuleInfo& getModuleInfo() = 0;
-  virtual void prepare(colorPrintfModule_t *colorPrintf_p, colorPrintfModuleVA_t *colorPrintfVA_p) = 0;
+  virtual void prepare(colorPrintfModule_t *colorPrintf_p,
+                       colorPrintfModuleVA_t *colorPrintfVA_p) = 0;
 
   // compiler only
   virtual FunctionData **getFunctions(unsigned int *count_functions) = 0;
@@ -71,7 +74,7 @@ class RobotModule {
   virtual void *writePC(unsigned int *buffer_length) = 0;
 
   // intepreter - devices
-  virtual int init() = 0;
+  virtual int init(initCallback_t& initCallback) = 0;
   virtual void final() = 0;
 
   // intepreter - program & lib
@@ -79,9 +82,9 @@ class RobotModule {
 
   // intepreter - program
   virtual int startProgram(int run_index, int pc_index) = 0;
-  virtual AviableRobotsResult *getAviableRobots() = 0;
-  virtual Robot *robotRequire(Robot *robot) = 0;
-  virtual void robotFree(Robot *robot) = 0;
+  virtual AviableRobotsResult *getAviableRobots(int run_index) = 0;
+  virtual Robot *robotRequire(int run_index, Robot *robot) = 0;
+  virtual void robotFree(int run_index, Robot *robot) = 0;
   virtual int endProgram(int run_index) = 0;
 
   // destructor
@@ -89,7 +92,29 @@ class RobotModule {
   virtual ~RobotModule() {}
 };
 ```
-*getModuleInfo* method must return the structure that describes this module. Description of this structure is given below. This method can be called multiple times in one work session.
+
+#### 1.1.2.1 Method getModuleInfo 
+
+*getModuleInfo* method must return *ModuleInfo* structure describing this module. This method can be called multiple times during one work session.
+
+Definition of *ModuleInfo* structure, describing the module:
+```
+struct ModuleInfo {
+  char *iid;
+  enum Modes { PROD, SPEC } mode;
+  unsigned short version;
+  char *digest;
+};
+```
+
+Description of elements used in this structure:
+
+- *iid* - the interface identifier of this module. This string must not be longer than 32 bytes. ["Learn more about interface id's](http://docs.rcml.tech/#13).
+- *mode* - type of module version, can be *PROD* - production version or *SPEC* - specification version. Production version involves a complete module file that declares the functions of the module and contains the code of the execution. Specification version assumes that file of the module declares only the functions of the module in the *RCML* environment, but doesn't have the code to execute them. Accordingly, the industrial version of the module can be used to compile programs for * RCML * with this module, and for their execution, and the specification version can be used only for compilation. The interpreter will not work with the specification version of the module.
+- *version* - contains actual version of module as a positive integer. If the module is not planned to be distributed through the Repository service, then this field does not play a big role. However, otherwise, you should keep in mind that Repository requires the next version of the downloadable module be higher than previously downloaded.
+- *digest* - a pointer to the developer's digital signature, is used only by the Repository service.
+
+#### 1.1.2.2 Method prepare
 
 *prepare* method is called once immediately after the module is loaded into memory. Two pointers to system functions of *RCML* environment allowing the logged output of various data are sent as parameters of the method. Output from these procedures is sent to standard output and can be formatted and written to the relevant log files of *RCML* environment.
 
@@ -98,13 +123,64 @@ Functions, to which pointers are sent, have the following description:
 void colorPrintfFromModuleVA(void *module, ConsoleColor colors, const char *mask, va_list args);
 void colorPrintfFromModule(void *module, ConsoleColor colors, const char *mask,...);
 ```
-A pointer to the current instance of robot module, i.e. this must be sent as *module* parameter. *ConsoleColor* structure must be sent as colors parameter. This parameter sets the output color at the console. The third parameter (mask) defines formatting mask similar to printf function from the standard library of C++. Further, depending on output function, according to the defined formatting mask, goes common enumeration of parameters or enumeration of parameters in the form of va_list structure from *std_arg.h*.
+
+A pointer to the current instance of robot module, i.e. this must be sent as *module* parameter. *ConsoleColor* structure must be sent as colors parameter. This parameter sets the output color at the console. The third parameter *mask* defines formatting mask similar to printf function from the standard library of *C++*. Further, depending on output function, according to the defined formatting mask, goes common enumeration of parameters or enumeration of parameters in the form of *va_list* structure from *std_arg.h*.
+
+#### 1.1.2.3 Method getFunctions
 
 *getFunctions* method is called only by the compiler. It must return a pointer to an array of pointers to *FunctionData* structures, describing every available robot function. And this method takes one parameter by link – *count_functions*, which must include the number of array elements with pointers to FunctionData, see details below. If robot module does not provide any functions, this method must return *NULL* pointer, and write 0 to *count_functions* parameter.
 
+Structure *FunctionData* is used to describe each each function of the robot available for use in *RCML* language. Definition of the structure using *C++* programming language:
+
+```
+struct FunctionData {
+  enum ParamTypes { STRING, FLOAT };
+
+  system_value command_index;
+  unsigned int count_params;
+  ParamTypes *params;
+  const char *name;
+  FunctionData() : command_index(0), count_params(0), params(NULL), name(NULL) {}
+  FunctionData(system_value command_index, system_value count_params, ParamTypes *params, const char *name) : command_index(command_index), count_params(count_params), params(params), name(name) {}
+};
+```
+
+Description of elements used in this structure:
+
+- *command_index* - unique identifier of the command within the module, this value will be used in the future and transferred to the robot's representation by the interpreter to indicate which command the specific robot should execute. The command identifier must be an integer greater than zero, a value of zero and negative values ​​are reserved for system usage;
+- *count_params* -  number of function parameters equal to the number of elements in the array * params *;
+- *params* - pointer to an array of parameter types, each element of the array must be represented by an enumeration element * ParamTypes: STRING * - string or * FLOAT * - number. For a detailed description of the parameter transfer mechanism, see below;
+- *name* - pointer to the name of the function that *RCML* developer should specify to call this function.
+
+
+#### 1.1.2.4 Method getAxis
+
 *getAxis* method is also called by the compiler only. It must return a pointer to an array of pointers to *AxisData* structures, describing each available axis of robot control for hand control mode. This method, similar to the previous one, takes one parameter by link – *count_axis*, which must include the number of array elements with pointers to *AxisData*, see details below. If robot module does not support hand control mode, this method must return *NULL* pointer, and write 0 to count_axis parameter.
 
+Description of the *AxisData* structure:
+
+```
+struct AxisData {
+  system_value axis_index;
+  variable_value upper_value;
+  variable_value lower_value;
+  const char *name;
+  AxisData() : axis_index(0), upper_value(0), lower_value(0), name(NULL) {}
+  AxisData(system_value axis_index, variable_value upper_value, variable_value lower_value, const char *name) : axis_index(axis_index), upper_value(upper_value), lower_value(lower_value), name(name) {}
+};
+```
+
+Description of elements used in this structure:
+- *axis_index* – the unique identifier of the axis within the module, this value will be used in the future and transferred to the representation of the robot by the interpreter to indicate the value of which axis to be changed. By analogy with the unique identifiers of the robot commands, the axis identifier must be an integer greater than zero;
+- *upper_value* – the upper limit value that can be transferred for a given axis;
+- *lower_value* – the lower limit value that can be transferred for a given axis;
+- *name* - pointer to the name of the function that *RCML* developer should specify to call this function.
+
+#### 1.1.2.5 Method writePC
+
 *writePC* method is called only by the compiler. This method allows the module to write (to the file of the program compiled) arbitrary data with the pointer to their range to be returned by the method as a result, and the length of data recorded in *buffer_length* parameter transferred by link.
+
+#### 1.1.2.6 Method init	
 
 *init* method is used for robot module to execute procedures necessary to get properly started, for example, reading the configuration file, establishing communication with robots, etc. The method is called once by the interpreter only at launch, immediately after loading dll library in memory and receiving a pointer to an instance of robot module. This method must return 0, if there were no errors when loading, and calling environment can continue operation. Otherwise – any other value different from 0, and calling program accordingly ends operation generating an error on impossibility to initialize this module.
 
