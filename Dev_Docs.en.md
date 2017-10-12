@@ -4,11 +4,7 @@ title: 'RCML - Documentation for developers'
 
 # 1 Creating Own Modules for RCML
 
-All headers
-
-All description of classes in *C++* programming language cited in this section, along with the appropriate header files, as well as examples of modules can be found in the relevant official repository at GitHub service:
-
-https://github.com/RobotControlTechnologies/module_headers
+All description of classes in *C++* programming language cited in this section, along with the appropriate header files, as well as examples of modules can be found in the relevant official repository [module_headers](https://github.com/RobotControlTechnologies/module_headers)
 
 All types of modules in *RCML* environment are created by dynamic link libraries (dll files for the OS of Windows family, or so files for the OS of Linux family). A variety of APIs to interact with the robot are implemented by using them. They are described below.
 
