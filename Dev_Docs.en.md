@@ -1,11 +1,11 @@
 # RCML - Documentation for developers
 
-1. [Creating Own Modules for RCML](#1-creating-own-modules-for-rcml)
-	''1.1[ Robot Module](#11-robot-module)	
-		'''1.1.1 [Robot Module Library API](#111-robot-module-library-api)
-		'''1.1.2 [Robot module API](#112-robot-module-api)
-			''''1.1.2.1 [The *getModuleInfo* Method](#1121-the-getmoduleinfo-method)
-			1.1.2.2 [The *prepare* Method](#1122-the-prepare-method)
+- 1. [Creating Own Modules for RCML](#1-creating-own-modules-for-rcml)
+	- 1.1[ Robot Module](#11-robot-module)	
+		- 1.1.1 [Robot Module Library API](#111-robot-module-library-api)
+		- 1.1.2 [Robot module API](#112-robot-module-api)
+			- 1.1.2.1 [The *getModuleInfo* Method](#1121-the-getmoduleinfo-method)
+			- 1.1.2.2 [The *prepare* Method](#1122-the-prepare-method)
 			1.1.2.3 [The *getFunctions* Method](#1123-the-getfunctions-method)
 			1.1.2.4 [The *getAxis* Method](#1124-the-getaxis-method)
 			1.1.2.5 [The *writePC* Method](#1125-the-writepc-method)
