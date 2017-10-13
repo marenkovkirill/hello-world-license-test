@@ -1,42 +1,79 @@
-#'RCML - Documentation for developers'
+# RCML - Documentation for developers
 
 1. [Creating Own Modules for RCML](#1-creating-own-modules-for-rcml)
+
 	1.1 [Robot Module](#11-robot-module)
+	
 		1.1.1 [Robot Module Library API](#111-robot-module-library-api)
+		
 		1.1.2 [Robot module API](#112-robot-module-api)
+		
 			1.1.2.1 [The *getModuleInfo* Method](#1121-the-getmoduleinfo-method)
+			
 			1.1.2.2 [The *prepare* Method](#1122-the-prepare-method)
+			
 			1.1.2.3 [The *getFunctions* Method](#1123-the-getfunctions-method)
+			
 			1.1.2.4 [The *getAxis* Method](#1124-the-getaxis-method)
+			
 			1.1.2.5 [The *writePC* Method](#1125-the-writepc-method)
+			
 			1.1.2.6 [The *init* Method](#1126-the-init-method)
+			
 			1.1.2.7 [The *final* Method](#1127-the-final-method)
+			
 			1.1.2.8 [The *readPC* Method](#1128-the-readpc-method)
+			
 			1.1.2.9 [The *startProgram* Method](#1129-the-startprogram-method)
+			
 			1.1.2.10 [The *getAviableRobots* Method](#11210-the-getaviablerobots-method)
+			
 			1.1.2.11 [The *robotRequire* Method](#11211-the-robotrequire-method)
+			
 			1.1.2.12 [The *robotFree* Method](#11212-the-robotfree-method)
+			
 			1.1.2.13 [The *endProgram* Method](#11213-the-endprogram-method)
+			
 			1.1.2.14 [The *destroy* Method](#11214-the-destroy-method)
+			
 		1.1.3 [Robot API](#113-robot-api)
+		
 			1.1.3.1 [The *prepare* Method](#1131-the-prepare-method)
+			
 			1.1.3.2 [The *getUniqName* Method](#1132-the-getuniqname-method)
+			
 			1.1.3.3 [The *executeFunction* Method](#1133-the-executefunction-method)
+			
 			1.1.3.4 [The *axisControl* Method ](#1134-the-axiscontrol-method)
+			
 	1.2 [Function Module](#12-function-module)
+	
 		1.2.1 [Function module library API](#121-function-module-library-api)
+		
 		1.2.2 [Function module API](#122-function-module-api)
+		
 	1.3 [Control Module](#13-control-module)
+	
 		1.3.1 [Control module library API](#131-control-module-library-api)
+		
 		1.3.2 [Control module API](#132-control-module-api)
+		
 		1.3.3 [The *execute* Method](#133-the-execute-method)
+		
 	1.4 [Choosing module](#14-choosing-module)
+	
 		1.4.1 [Chosing module library API](#141-chosing-module-library-api)
+		
 		1.4.2 [Chosing module API](#142-chosing-module-api)
+		
 		1.4.3 [The *makeChoise* Method](#143-the-makechoise-method)
+		
 2. [About interface identifiers for modules](#2-about-interface-identifiers-for-modules)
+
 3. [Work with RCML statistics](#3-work-with-rcml-statistics)
+
 	3.1 [General information and recommendations](#31-general-information-and-recommendations)
+	
 	3.2 [Structure of statistics database](#32-structure-of-statistics-database)
 
 # 1 Creating Own Modules for RCML
