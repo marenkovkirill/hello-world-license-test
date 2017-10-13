@@ -1,7 +1,44 @@
----
 title: 'RCML - Documentation for developers'
----
 
+ 1. [Creating Own Modules for RCML](#1-creating-own-modules-for-rcml)
+	1.1 [Robot Module](#11-robot-module)
+		1.1.1 [Robot Module Library API](#111-robot-module-library-api)
+		1.1.2 [Robot module API](#112-robot-module-api)
+			1.1.2.1 [The *getModuleInfo* Method](#1121-the-getmoduleinfo-method)
+			1.1.2.2 [The *prepare* Method](#1122-the-prepare-method)
+			1.1.2.3 [The *getFunctions* Method](#1123-the-getfunctions-method)
+			1.1.2.4 [The *getAxis* Method](#1124-the-getaxis-method)
+			1.1.2.5 [The *writePC* Method](#1125-the-writepc-method)
+			1.1.2.6 [The *init* Method](#1126-the-init-method)
+			1.1.2.7 [The *final* Method](#1127-the-final-method)
+			1.1.2.8 [The *readPC* Method](#1128-the-readpc-method)
+			1.1.2.9 [The *startProgram* Method](#1129-the-startprogram-method)
+			1.1.2.10 [The *getAviableRobots* Method](#11210-the-getaviablerobots-method)
+			1.1.2.11 [The *robotRequire* Method](#11211-the-robotrequire-method)
+			1.1.2.12 [The *robotFree* Method](#11212-the-robotfree-method)
+			1.1.2.13 [The *endProgram* Method](#11213-the-endprogram-method)
+			1.1.2.14 [The *destroy* Method](#11214-the-destroy-method)
+		1.1.3 [Robot API](#113-robot-api)
+			1.1.3.1 [The *prepare* Method](#1131-the-prepare-method)
+			1.1.3.2 [The *getUniqName* Method](#1132-the-getuniqname-method)
+			1.1.3.3 [The *executeFunction* Method](#1133-the-executefunction-method)
+			1.1.3.4 [The *axisControl* Method ](#1134-the-axiscontrol-method)
+	1.2 [Function Module](#12-function-module)
+		1.2.1 [Function module library API](#121-function-module-library-api)
+		1.2.2 [Function module API](#122-function-module-api)
+	1.3 [Control Module](#13-control-module)
+		1.3.1 [Control module library API](#131-control-module-library-api)
+		1.3.2 [Control module API](#132-control-module-api)
+		1.3.3 [The *execute* Method](#133-the-execute-method)
+	1.4 [Choosing module](#14-choosing-module)
+		1.4.1 [Chosing module library API](#141-chosing-module-library-api)
+		1.4.2 [Chosing module API](#142-chosing-module-api)
+		1.4.3 [The *makeChoise* Method](#143-the-makechoise-method)
+2. [About interface identifiers for modules](#2-about-interface-identifiers-for-modules)
+3. [Work with RCML statistics](#3-work-with-rcml-statistics)
+	3.1 [General information and recommendations](#31-general-information-and-recommendations)
+	3.2 [Structure of statistics database](#32-structure-of-statistics-database)
+	
 # 1 Creating Own Modules for RCML
 
 All description of classes in *C++* programming language cited in this section, along with the appropriate header files, as well as examples of modules can be found in the relevant official repository [module_headers](https://github.com/RobotControlTechnologies/module_headers)
@@ -198,7 +235,7 @@ struct RobotInfo {
 
 Following structure describes every robot connected to the module and includes two parameters:
 - *uniqueName* - pointer to a line - a unique name of robot, which is used to display system messages related to this robot (to simplify the identification of the robot);
-- serialNumber* - pointer to a line - a serial number of the robot
+- *serialNumber* - pointer to a line - a serial number of the robot
 
 
 The function *initCallback* compares the serial numbers of the robots with those specified in the current RCML license and returns a pointer to the *RobotInfoResult* structure.
@@ -259,7 +296,7 @@ In the second case, the *robot* parameter will be *NULL*, and the robot module c
 
 **Important**! It should be noted that this method should not delay execution to wait for an available robot; this will be done by internal mechanisms of the *RCML* environment.
 
-#### 1.1.2.11 The *robotFree* Method
+#### 1.1.2.12 The *robotFree* Method
 
 *robotFree* method is called only by the interpreter when a certain engaged robot has ceased to be necessary for a specific program and can be released. A pointer that was previously obtained from robotRequire method will be sent as a parameter. It is guaranteed that this pointer is not changed during program execution.
 
@@ -352,7 +389,7 @@ This method can be called specifying one of the following system values (named c
 - *ROBOT_COMMAND_HAND_CONTROL_END* – exiting hand control mode.
 
 
-#### 1.1.3.4 Method axisControl
+#### 1.1.3.4 The *axisControl* Method 
 
 *axisControl* method is called by the interpreter only in hand control mode. A unique identifier of robot axis from AxisData structure is sent as the first parameter of this method. A new value for this axis is sent as the second parameter. A mechanism of transfer is described in Section ["Value Transfer Principle"](http://docs.rcml.tech/en#4-2-value-transfer-principle).
 
@@ -462,7 +499,7 @@ The *getModuleInfo, prepare, writePC, readPC, init, final, startProgram, endProg
 
 *getAxis* method is similar to the same method in robot module, but when calling, control module must return a list of control axes that it provides for linking in the call of *hand_control* system function.
 
-#### 1.3.1.1 The *execute* Method
+#### 1.3.3 The *execute* Method
 
 *execute* method is called by the interpreter when switching to hand control mode. A pointer to the function of sendAxisState_t type will be sent as the only parameter of this method, defined as follows:
 ```
@@ -518,7 +555,7 @@ Further, the abstract control module will be understood as the *ChoiceModule* cl
 ```
 The *getModuleInfo, prepare, writePC, readPC, init, final, startProgram, endProgram* and *destroy* methods are completely similar to the homonymous methods of the robot module.
 
-#### 1.4.1.1 The *makeChoise* Method
+#### 1.4.3 The *makeChoise* Method
 
 The *makeChoice* method is called when the choosing module is required to make a decision about choosing a robot. It is in this method that the robot choosing logic has been implemented. The following parameters are passed to the input of this method:
 
